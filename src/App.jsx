@@ -2,15 +2,19 @@ import './App.css'
 import imgSubir from '../src/assets/nube-subir.png';
 import imgVideo from '../src/assets/video.png'
 import { useState, useRef} from 'react';
+import { translateAudio } from './services/azureTranslator';
 
 function App() {
 
   const [idioma, setIdioma] = useState("");
   const [archivoSubido, setArchivoSubido] = useState(false); 
   const [ruta, setRuta] = useState(imgSubir);
-  const [mensaje, setMensaje] = useState("Arrastra tu video aquí o haz click para buscar");
+  const [mensaje, setMensaje] = useState("Arrastra tu audio aquí o haz click para buscar");
   const refSubir = useRef(null);
   const refInput = useRef();
+  const [file, setFile] = useState(null);
+  const [audioTraducido, setAudioTraducido] = useState(null);
+
 
   const handleIdioma = (newIdioma) => {
     setIdioma(newIdioma);
@@ -36,12 +40,13 @@ function App() {
       refSubir.current.style.backgroundColor = "#0F172A";
       const files = e.dataTransfer.files;
       const file = files[0];
-      if(file.type == "video/mp4"){
+      if(file.type.startsWith("audio/")){
         //Me espero a ver como funciona el pase del video a la API para entonces manipular el archivo
         refSubir.current.style.border = "none";
         setArchivoSubido(true);
         setRuta(imgVideo);
-        setMensaje("Video cargado correctamente");
+        setMensaje("Audio cargado correctamente");
+        setFile(file);
       }
       else{
         alert("Formato no valido, intentalo de nuevo");
@@ -63,31 +68,51 @@ function App() {
         refSubir.current.style.border = "none";
         setArchivoSubido(true);
         setRuta(imgVideo);
-        setMensaje("Video cargado correctamente");
+        setFile(file);
+        setMensaje("Audio  cargado correctamente");
       }else{
         setArchivoSubido(false);
-        alert("Formato no valido o error al cargar el video, intentalo de nuevo");
+        alert("Formato no valido o error al cargar el audio, intentalo de nuevo");
       }
     }
   }
 
-  const handleSubir = () => {
-    if(archivoSubido && idioma != ""){
-      alert("En proceso de traducción");
-    }else{
-      alert("Asegurate de adjuntar un video y seleccionar un idioma")
+const convertirAWav = async (file) => {
+  const formData = new FormData();
+  formData.append("audio", file);
+
+  const res = await fetch("http://localhost:3001/convert", {
+    method: "POST",
+    body: formData
+  });
+
+  const audiofinal = await res.blob();
+
+  return new File([audiofinal], "audio.wav", { type: "audio/wav" });
+};
+
+const handleSubir = async () => {
+  if (archivoSubido && idioma !== "") {
+      const idiomaMap = {"Ingles": "en","Japones": "ja", "Ruso": "ru", "Español": "es"};
+      const wavFile = await convertirAWav(file);
+      const result = await translateAudio(wavFile,"es-MX",idiomaMap[idioma]);
+      setAudioTraducido(result.audioBlob);
+
+      console.log(result.texto);
+      } else {
+      alert("Asegurate de adjuntar un audio y seleccionar un idioma");
     }
-  }
+  };
 
   return (
     <>
       <div className='container'>
-        <h2 style={{color: '#F8FAFC'}}>Video Translator</h2>
+        <h2 style={{color: '#F8FAFC'}}>Audio Translator</h2>
         <div className='subirVideo' onDragOver={(e) => handleDragOver(e)} onDragLeave={() => handleDragLeave()} onDrop={(e) => handleDrop(e)} ref={refSubir} onClick={() => {handleClick()}}>
           <p style={{color: '#F8FAFC'}}>{mensaje}</p>
           <img src={ruta}/>
         </div>
-        <input type='file' accept='video/*' ref={refInput} style={{display: 'none'}} onChange={(e) => {handleOnChange(e)}} />
+        <input type='file' accept='audio/*' ref={refInput} style={{display: 'none'}} onChange={(e) => {handleOnChange(e)}} />
         <p style={{color: '#9fabbb', fontSize: '12px'}}>Opciones de traducción<br></br>
           ¡Rompe las barreras del idioma!
         </p>
@@ -97,7 +122,7 @@ function App() {
           <button className='botonConfig' onClick={() => handleIdioma("Ruso")}>Ruso</button>
           <button className='botonConfig' onClick={() => handleIdioma("Español")}>Español</button>
         </div>
-        <button className='botonSubir' onClick={() => handleSubir()}>Subir video y traducir</button>
+        <button className='botonSubir' onClick={() => handleSubir()}>Subir audio y traducir</button>
       </div>
     </>
   )
