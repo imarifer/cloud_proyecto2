@@ -61,6 +61,7 @@ export const translateAudio = (audioFile, sourceLanguage = "es-MX", targetLangua
 
                             //se elige la voz segun el idoma q se escoja, o default la vox en inlges
                             speechConfig.speechSynthesisVoiceName = voiceMap[targetLanguage] || "en-US-AriaNeural";
+                            speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3;
 
                             //se creae el sintetizador d ela voz
                             const synthesizer = new sdk.SpeechSynthesizer(speechConfig, null);
