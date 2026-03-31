@@ -116,7 +116,6 @@ const handleSubir = async () => {
     setFile(null);
     setAudioTraducido(null);
     setTraducido(false);
-    refSubir.current.classList.remove("subirSinBorde");
   }
 
   //Renderizado condicional para mostrar resultados o permitir adjuntar un audio
