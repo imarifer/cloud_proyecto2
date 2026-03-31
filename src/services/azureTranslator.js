@@ -16,10 +16,7 @@ export const translateAudio = (audioFile, sourceLanguage = "es-MX", targetLangua
         //las credenciales 
         const speechKey = import.meta.env.VITE_AZURE_SPEECH_KEY;
         const speechRegion = import.meta.env.VITE_AZURE_SPEECH_REGION;
-
-        console.log(targetLanguage);
-
-
+        
         // por si no hay nada
         if (!speechKey || !speechRegion) {
             return reject(new Error("Faltan las credenciales de Azure en .env"));
@@ -32,8 +29,9 @@ export const translateAudio = (audioFile, sourceLanguage = "es-MX", targetLangua
         reader.onload = () => {
             try {
                 //Obtención de los bits del audio 
-                //const audioData = reader.result;
-                /*Si solo se coloca como en la línea de arriba estamos pasando un puntero a los datos
+                /*
+                const audioData = reader.result;
+                Si solo se coloca como en la línea de arriba estamos pasando un puntero a los datos
                 pero no deja leerlos, al usar Unit8Array nos da una vista de esos datos permitiendo que se 
                 lean y procesen
                 */
