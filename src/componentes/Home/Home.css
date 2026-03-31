@@ -4,7 +4,6 @@
   padding: 2rem;
   text-align: center;
 }
-
 .container {
   display: flex;
   flex-direction: column;
@@ -30,6 +29,15 @@
   height: 200px;
   border-radius: 10px;
 }
+.subirSinBorde{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none !important;
+  width: 80%;
+  height: 200px;
+}
 .containerBotones{
   width: 71%;
   height: auto;
@@ -44,12 +52,21 @@
   background-color: #3b404b;
   color: #F8FAFC;
 }
+.botonConfig:focus{
+  background-color: #7C3AED;
+  outline: none;
+  box-shadow: none;
+}
 .botonSubir{
   width: 71%;
   border-radius: 10px;
   background-color: #7C3AED;
   border-color: #7C3AED;
   color: #F8FAFC;
+}
+.botonSubir:focus{
+  outline: none;
+  box-shadow: none;
 }
 .botonConfig:hover{
   background-color: #7C3AED;
@@ -92,6 +109,10 @@
   border-color: #7C3AED;
   color: #F8FAFC;
   margin-top: 5px;
+}
+.botonVolver:focus{
+  outline: none;
+  box-shadow: none;
 }
 .botonVolver:hover{
   border-color: #7C3AED;

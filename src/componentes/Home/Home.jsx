@@ -23,6 +23,7 @@ const Home = () => {
     console.log(idioma)
   }
 
+  //Funciones para manejar el drag and drop que permita subir el audio
   const handleDragOver = (e) => {
     e.preventDefault();
     if(archivoSubido == false){
@@ -42,8 +43,7 @@ const Home = () => {
       const files = e.dataTransfer.files;
       const file = files[0];
       if(file.type.startsWith("audio/")){
-        //Me espero a ver como funciona el pase del video a la API para entonces manipular el archivo
-        refSubir.current.style.border = "none";
+        refSubir.current.classList.add("subirSinBorde");
         setArchivoSubido(true);
         setRuta(imgVideo);
         setMensaje("Audio cargado correctamente");
@@ -56,17 +56,19 @@ const Home = () => {
     }
   }
   
+  //Función para manejar el click que permite mostrar el sistema de archivos para subir un audio
   const handleClick = () => {
     refInput.current.click();
   }
 
+  //Función para manejar el cambio del input que permite ingresar archivos en especifico audio
   const handleOnChange = (e) => {
     if(archivoSubido == false){
       e.preventDefault();
       const files = e.target.files;
       const file = files[0];
       if(file){
-        refSubir.current.style.border = "none";
+        refSubir.current.classList.add("subirSinBorde");
         setArchivoSubido(true);
         setRuta(imgVideo);
         setFile(file);
@@ -78,7 +80,7 @@ const Home = () => {
     }
   }
 
-/*Función asincrona fetch para conexión a la ruta convert de la API local para convertir el audio a formato wav*/
+//Función asincrona para conexión a la ruta convert de la API local para convertir el audio a formato wav
 const convertirAWav = async (file) => {
   const formData = new FormData();
   formData.append("audio", file);
@@ -94,7 +96,7 @@ const convertirAWav = async (file) => {
 };
 
 
-
+//Función asincrona para manejar la traducción del audio, mandando a llamar la función que conecta con la API de Azure
 const handleSubir = async () => {
   if (archivoSubido && idioma !== "") {
       const idiomaMap = {"Ingles": "en","Japones": "ja", "Ruso": "ru", "Español": "es"};
@@ -109,10 +111,23 @@ const handleSubir = async () => {
     }
   };
 
+  //Volvemos a reiniciar todas las variables para poder hacer un proceso nuevo
+  const handleVolver = () => {
+    setIdioma("");
+    setArchivoSubido(false);
+    setRuta(imgSubir);
+    setMensaje("Arrastra tu audio aquí o haz click para buscar");
+    setFile(null);
+    setAudioTraducido(null);
+    setTraducido(false);
+    refSubir.current.classList.remove("subirSinBorde");
+  }
+
+  //Renderizado condicional para mostrar los resultados o la interfaz para subir el audio
   return (
     <>
       {
-        !traducido 
+        !traducido
         ? 
         (
           <div className='container'>
@@ -146,9 +161,9 @@ const handleSubir = async () => {
             </div>
             <div className='containerAudio'>
               <p style={{fontSize: 20, fontWeight: 'bold'}}>Traducido</p>
-              <audio controls src={audioTraducido} style={{width: '80%', height: '35%'}}></audio>
+              <audio controls src={URL.createObjectURL(audioTraducido)} style={{width: '80%', height: '35%'}}></audio>
             </div>
-            <button className='botonVolver'>Regresar</button>
+            <button className='botonVolver' onClick={() => {handleVolver()}}>Regresar</button>
           </div>
         )
       }
