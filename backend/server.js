@@ -16,7 +16,6 @@ app.post("/convert", upload.single("audio"), async (req, res) => {
   try {
     const inputPath = req.file.path;
     const outputPath = inputPath + ".wav";
-    console.log("Hola");
 
     await new Promise((resolve, reject) => {
       ffmpeg(inputPath)
