@@ -224,7 +224,7 @@ const convertirAWav = async (file) => {
   const formData = new FormData();
   formData.append("audio", file);
 
-  const res = await fetch("http://localhost:3001/convert", {
+  const res = await fetch("/convert", {
     method: "POST",
     body: formData
   });
